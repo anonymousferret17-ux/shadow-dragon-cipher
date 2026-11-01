@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090510">
+<title>Shadow Dragon Cipher | Obsidian Agency</title>
+<style>
+:root{color-scheme:dark;--bg:#08050f;--panel:#120b20;--panel2:#1a1030;--purple:#a78bfa;--bright:#c4b5fd;--muted:#b8accd;--line:#392454}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at 50% -15%,#32105c 0,transparent 48%),var(--bg);color:#f5f0ff;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+header{text-align:center;padding:38px 18px 22px}
+.crest{font-size:42px;filter:drop-shadow(0 0 15px #8b5cf6)}
+.kicker{font-size:.75rem;letter-spacing:.25em;color:var(--purple);font-weight:800}
+h1{margin:8px 0;font-size:clamp(2rem,6vw,3.6rem);line-height:1.08;letter-spacing:.04em;text-transform:uppercase;text-shadow:0 0 25px #7c3aed88}
+.subtitle{max-width:650px;margin:12px auto;color:var(--muted)}
+main{width:min(1000px,calc(100% - 28px));margin:0 auto 48px}
+.tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0 18px}
+button,.tab{font:inherit;border:1px solid var(--line);border-radius:12px;background:var(--panel2);color:#f5f0ff;padding:10px 14px;cursor:pointer;transition:.15s}
+button:hover,.tab:hover{border-color:var(--purple);box-shadow:0 0 18px #8b5cf633}
+.tab[aria-selected=true],.primary{background:linear-gradient(135deg,#6d28d9,#4c1d95);border-color:#a78bfa}
+.panel{background:linear-gradient(160deg,#170d28ee,#0e0918f5);border:1px solid var(--line);border-radius:20px;padding:clamp(16px,3vw,26px);box-shadow:0 18px 60px #0006;margin-bottom:18px}
+h2{font-size:1.25rem;margin:0 0 12px}
+label{display:block;font-weight:700;margin:14px 0 7px}
+textarea{width:100%;min-height:120px;resize:vertical;background:#090610;border:1px solid #4b3268;border-radius:12px;color:#f8f4ff;padding:14px;font:inherit;outline:none}
+textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px #8b5cf622}
+.output{min-height:100px;padding:15px;background:#090610;border:1px solid #4b3268;border-radius:12px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:1.15rem;color:var(--bright)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.hint{color:var(--muted);font-size:.9rem}
+.keygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:8px}
+.key{display:flex;flex-direction:column;align-items:center;gap:2px;background:#0b0713;border:1px solid #302044;border-radius:10px;padding:10px}
+.rune{font-size:1.8rem;color:var(--bright);text-shadow:0 0 14px #8b5cf688}
+.letter{font-size:.78rem;color:var(--muted);letter-spacing:.12em}
+footer{text-align:center;padding:0 18px 32px;color:#8f83a5;font-size:.85rem}
+.status{min-height:1.5em;color:#c4b5fd;font-size:.9rem;margin-top:7px}
+.hidden{display:none}
+@media(min-width:760px){.twocol{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="crest" aria-hidden="true">🐉</div>
+  <div class="kicker">OBSIDIAN AGENCY • CLASSIFIED TOOL</div>
+  <h1>Shadow Dragon Cipher</h1>
+  <p class="subtitle">Turn ordinary messages into the language of the void. Encode, decode, and copy runes straight into your chat.</p>
+</header>
+<main>
+  <div class="tabs" role="tablist" aria-label="Cipher tools">
+    <button class="tab" role="tab" aria-selected="true" data-tab="encode">Encode message</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="decode">Decode message</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="alphabet">Alphabet key</button>
+  </div>
+
+  <section class="panel" id="encode">
+    <h2>⟡ Encode a message</h2>
+    <p class="hint">Type in English. Your rune message updates automatically. Spaces and punctuation stay unchanged.</p>
+    <label for="plain">Your message</label>
+    <textarea id="plain" placeholder="THE SHADOWS ARE WATCHING">THE SHADOW DRAGON AWAKENS</textarea>
+    <label for="encoded">Shadow Dragon runes</label>
+    <div class="output" id="encoded" aria-live="polite"></div>
+    <div class="actions"><button class="primary" id="copyEncoded">Copy runes</button><button id="clearEncode">Clear</button></div>
+    <div class="status" id="encodeStatus" role="status"></div>
+  </section>
+
+  <section class="panel hidden" id="decode">
+    <h2>⟡ Decode a message</h2>
+    <p class="hint">Paste a message written with this cipher to reveal its English text.</p>
+    <label for="runesInput">Rune message</label>
+    <textarea id="runesInput" placeholder="Paste Shadow Dragon runes here..."></textarea>
+    <label for="decoded">Decoded message</label>
+    <div class="output" id="decoded" aria-live="polite"></div>
+    <div class="actions"><button class="primary" id="copyDecoded">Copy English</button><button id="clearDecode">Clear</button></div>
+    <div class="status" id="decodeStatus" role="status"></div>
+  </section>
+
+  <section class="panel hidden" id="alphabet">
+    <h2>⟡ Alphabet key</h2>
+    <p class="hint">Each English letter maps to one rune. This starter cipher uses Unicode runic-style symbols, so it works in many chats and fonts.</p>
+    <div class="keygrid" id="keygrid"></div>
+    <div class="actions"><button id="copyKey">Copy alphabet key</button></div>
+    <div class="status" id="keyStatus" role="status"></div>
+  </section>
+  <section class="panel">
+    <h2>⚠ Field note</h2>
+    <p class="hint">This is a fun substitution cipher, not secure encryption. Anyone with the alphabet key can decode it. Some devices may display runes differently depending on their font.</p>
+  </section>
+</main>
+<footer>OBSIDIAN AGENCY • SHADOW DIVISION // END TRANSMISSION</footer>
+<script>
+const letters = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
+const runes = ["ᚨ","ᛒ","ᚲ","ᛞ","ᛖ","ᚠ","ᚷ","ᚺ","ᛁ","ᛃ","ᚴ","ᛚ","ᛗ","ᚾ","ᛟ","ᛈ","ᛩ","ᚱ","ᛊ","ᛏ","ᚢ","ᚡ","ᚹ","ᛪ","ᚤ","ᛉ"];
+const encMap = Object.fromEntries(letters.map((x,i)=>[x,runes[i]]));
+const decMap = Object.fromEntries(runes.map((x,i)=>[x,letters[i]]));
+const $ = id => document.getElementById(id);
+function encode(s){return [...s.toUpperCase()].map(c=>encMap[c]||c).join("")}
+function decode(s){return [...s].map(c=>decMap[c]||decMap[c.toUpperCase()]||c).join("")}
+function updateEncode(){$("encoded").textContent=encode($("plain").value)}
+function updateDecode(){$("decoded").textContent=decode($("runesInput").value)}
+async function copy(text,statusId){
+  try{await navigator.clipboard.writeText(text);$(statusId).textContent="Copied to clipboard. The shadows carry your message."}
+  catch(e){const t=document.createElement("textarea");t.value=text;document.body.appendChild(t);t.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}t.remove();$(statusId).textContent=ok?"Copied to clipboard.":"Copy was blocked by this browser. Select the text and copy it manually."}
+}
+$("plain").addEventListener("input",updateEncode);
+$("runesInput").addEventListener("input",updateDecode);
+$("copyEncoded").onclick=()=>copy($("encoded").textContent,"encodeStatus");
+$("copyDecoded").onclick=()=>copy($("decoded").textContent,"decodeStatus");
+$("clearEncode").onclick=()=>{$("plain").value="";updateEncode();$("encodeStatus").textContent=""};
+$("clearDecode").onclick=()=>{$("runesInput").value="";updateDecode();$("decodeStatus").textContent=""};
+$("copyKey").onclick=()=>copy(letters.map((l,i)=>l+" = "+runes[i]).join("\n"),"keyStatus");
+$("keygrid").innerHTML=letters.map((l,i)=>`<div class="key"><span class="rune">${runes[i]}</span><span class="letter">${l}</span></div>`).join("");
+document.querySelectorAll("[data-tab]").forEach(btn=>btn.addEventListener("click",()=>{
+  document.querySelectorAll("[data-tab]").forEach(b=>b.setAttribute("aria-selected",String(b===btn)));
+  ["encode","decode","alphabet"].forEach(id=>$(id).classList.toggle("hidden",id!==btn.dataset.tab));
+}));
+updateEncode();
+</script>
+</body>
+</html>
